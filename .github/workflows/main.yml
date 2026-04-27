@@ -1,0 +1,35 @@
+name: Render Quarto Notebook
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          pip install jupyter nbclient
+
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render notebook
+        run: quarto render project.ipynb
+
+      - name: Upload output (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-output
+          path: _site/
